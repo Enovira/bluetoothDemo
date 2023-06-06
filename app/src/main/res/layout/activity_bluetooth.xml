@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:package="com.enov.bel.mvvm.view.BluetoothActivity">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.enov.bel.mvvm.vm.BluetoothActivityVM" />
+    </data>
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawerLayout"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.flexbox.FlexboxLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+            app:alignItems="center"
+            app:flexDirection="column"
+            app:flexWrap="nowrap"
+            app:justifyContent="flex_start">
+
+            <TextView
+                android:id="@+id/switchBlue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> viewModel.switchBluetooth()}"
+                style="@style/textButtonStyle"
+                android:text="开启/关闭蓝牙" />
+
+            <TextView
+                android:id="@+id/discoverable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/textButtonStyle"
+                android:text="蓝牙可被搜索" />
+
+            <TextView
+                android:id="@+id/startDiscoverBluetoothDevice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->viewModel.startDiscovery()}"
+                style="@style/textButtonStyle"
+                android:text="搜索蓝牙设备" />
+
+            <TextView
+                android:id="@+id/openDrawerLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/textButtonStyle"
+                android:text="开启DrawerLayout" />
+
+            <TextView
+                android:id="@+id/getBondedDevices"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="@{()->viewModel.getBondedDevices()}"
+                style="@style/textButtonStyle"
+                android:text="已配对的设备" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{()->viewModel.startListenToBluetoothSocket()}"
+                    style="@style/textButtonStyle"
+                    android:text="开始监听蓝牙Socket" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="@{()->viewModel.stopListenToBluetoothSocket()}"
+                    style="@style/textButtonStyle"
+                    android:text="关闭蓝牙Socket" />
+
+                <TextView
+                    android:id="@+id/sendMessageFromMain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/textButtonStyle"
+                    android:text="发送消息(主)" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
+
+                <EditText
+                    android:id="@+id/messageContent"
+                    android:layout_width="200dp"
+                    android:layout_height="48dp"
+                    android:textSize="14sp"
+                    android:maxLines="1"
+                    android:digits="0123456789ABCDEF"
+                    android:text="A0E3B984CA"
+                    android:background="@drawable/editview_background"
+                    android:hint="请输入传输的内容"/>
+
+                <TextView
+                    android:id="@+id/sendMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/textButtonStyle"
+                    android:text="传输信息(从)" />
+
+            </LinearLayout>
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_gravity="start"
+            android:background="@color/white"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_width="240dp"
+            android:layout_height="match_parent"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView2"
+            android:layout_gravity="end"
+            android:background="@color/white"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:layout_width="240dp"
+            android:layout_height="match_parent"/>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+</layout>
