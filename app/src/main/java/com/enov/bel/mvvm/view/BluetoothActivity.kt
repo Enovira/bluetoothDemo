@@ -30,7 +30,7 @@ import java.util.*
 
 
 @SuppressLint("MissingPermission")
-class BluetoothActivity: BaseActivity<BluetoothActivityVM, ActivityBluetoothBinding>() {
+class BluetoothActivity : BaseActivity<BluetoothActivityVM, ActivityBluetoothBinding>() {
 
     private lateinit var foundDeviceAdapter: BluetoothDevicesAdapter
     private lateinit var bondedDeviceAdapter: BluetoothDevicesAdapter
@@ -63,33 +63,36 @@ class BluetoothActivity: BaseActivity<BluetoothActivityVM, ActivityBluetoothBind
         foundDeviceAdapter.setEmptyView(R.layout.empty_recycle_view)
         bondedDeviceAdapter.setEmptyView(R.layout.empty_recycle_view)
         foundDeviceAdapter.setOnItemClickListener { _, _, position ->
-            DialogFactory.showMessageDialog{ messageDialog: MessageDialog, _: View ->
+            DialogFactory.showMessageDialog { messageDialog: MessageDialog, _: View ->
                 viewModel.pairBluetoothDevice(foundBluetoothDeviceList[position])
                 messageDialog.dismiss()
                 false
             }
         }
         bondedDeviceAdapter.setOnItemClickListener { _, _, position ->
-            MessageDialog.show("提示","是否连接该设备","确认连接", "取消").setOkButton { _, _ ->
-                    Thread{
-                        if (bluetoothSocket == null){
-                            bluetoothSocket = BluetoothUtil.instance.createRfcommSocketToServiceRecord(bondedBluetoothDeviceList[position],UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"))
+            MessageDialog.show("提示", "是否连接该设备", "确认连接", "取消").setOkButton { _, _ ->
+                Thread {
+                    if (bluetoothSocket == null) {
+                        bluetoothSocket = BluetoothUtil.instance.createRfcommSocketToServiceRecord(
+                            bondedBluetoothDeviceList[position],
+                            UUID.fromString("00001101-0000-1000-8000-00805F9B34FB")
+                        )
+                    }
+                    try {
+                        DialogFactory.showWaitDialog("正在连接蓝牙中,请稍后...")
+                        runOnUiThread {
+                            binding.drawerLayout.closeDrawer(GravityCompat.END)
                         }
-                        try {
-                            DialogFactory.showWaitDialog("正在连接蓝牙中,请稍后...")
-                            runOnUiThread {
-                                binding.drawerLayout.closeDrawer(GravityCompat.END)
-                            }
-                            bluetoothSocket?.connect()
-                            sendBroadcast(Intent(Cons.intent.CONNECT_TO_BLUETOOTH))
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            runOnUiThread {
-                                AppToast.show("连接蓝牙失败")
-                                DialogFactory.dismissWaitDialog()
-                            }
+                        bluetoothSocket?.connect()
+                        sendBroadcast(Intent(Cons.intent.CONNECT_TO_BLUETOOTH))
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        runOnUiThread {
+                            AppToast.show("连接蓝牙失败")
+                            DialogFactory.dismissWaitDialog()
                         }
-                    }.start()
+                    }
+                }.start()
                 false
             }
         }
@@ -115,7 +118,11 @@ class BluetoothActivity: BaseActivity<BluetoothActivityVM, ActivityBluetoothBind
         binding.sendMessage.setOnClickListener {
             val content = binding.messageContent.text.trim().toString()
             if (content == "") {
-                Toast.makeText(this@BluetoothActivity, binding.messageContent.hint, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@BluetoothActivity,
+                    binding.messageContent.hint,
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
             viewModel.viewModelScope.launch(Dispatchers.IO) {
@@ -132,10 +139,24 @@ class BluetoothActivity: BaseActivity<BluetoothActivityVM, ActivityBluetoothBind
         binding.sendMessageFromMain.setOnClickListener {
             val content = binding.messageContent.text.trim().toString()
             if (content == "") {
-                Toast.makeText(this@BluetoothActivity, binding.messageContent.hint, Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@BluetoothActivity,
+                    binding.messageContent.hint,
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
-            viewModel.sendMessage(CodeUtil.toBytes(content))
+            val str =
+                // JH6000
+//                "68 00 A2 68 30 00 00 1A 0A 81 04 03 07 DF 04 11 00 01 00 00 00 00 00 03 F6 00 01 00 00 00 1E 00 00 64 00 03 3F FA E1 48 00 00 6B 00 03 42 62 CC CD 00 15 09 0F 0A 1B 19 00 68 30 00 00 1A 0A 81 04 03 07 DF 04 11 00 01 00 00 00 01 00 03 F6 00 01 00 00 00 1E 00 00 64 00 03 3F 83 D7 0A 00 00 6B 00 03 42 5D 99 9A 00 15 09 0F 0A 1B 19 00 68 30 00 00 1A 0A 81 04 03 07 DF 04 11 00 01 00 00 00 02 00 03 F6 00 01 00 00 00 1E 00 00 64 00 03 3F 91 EB 85 00 00 6B 00 03 42 5C CC CD 00 15 09 0F 0A 1B 19 00 56 16"
+            // 回路电阻测试仪 JYL_100B
+//            "7E 35 35 31 34 48 30 31 30 30 2E 39 34 39 39 2E 36 20 75 5C 0D"
+                //SF6气体检漏仪 JHLK_100
+                "65 02 03 00 56 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00 03 41 20 00 00 42 C8 00 00 2E 41 20 00 00 41 20 00 00 40 D8 A6 4E 00 E1 C5 56"
+                //HVM-5000
+//                "42 45 47 50 00 00 00 03 00 41 00 00 00 E6 07 07 19 0C 30 1A 00 F0 1D 45 05 EF 6A DC 42 E7 9F DC 42 00 00 00 00 1B 9A C2 80 3F 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0000 00 00 00 00 00 00 00 00 00 00 00 00 00 0000 00 00 D3 29"
+//            viewModel.sendMessage(CodeUtil.toBytes(content))
+            viewModel.sendMessage(str.replace(" ", ""))
         }
     }
 

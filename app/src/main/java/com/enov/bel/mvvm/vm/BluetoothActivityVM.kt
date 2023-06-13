@@ -89,6 +89,11 @@ class BluetoothActivityVM(application: Application) : AndroidViewModel(applicati
     }
 
     fun sendMessage(byteArray: ByteArray) {
-        bluetoothSocketThread?.sendMessage(byteArray)
+        val str = "6501030075000115061E10322A285745353030362A00FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFC25BE4CE41A628F64151A9FCFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF41D8CCCD3E54773DFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFBEA56"
+        bluetoothSocketThread?.sendMessage(CodeUtil.toBytes(str.replace(" ", "")))
+    }
+
+    fun sendMessage(string: String) {
+        bluetoothSocketThread?.sendMessage(string)
     }
 }

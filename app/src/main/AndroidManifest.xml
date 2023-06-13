@@ -39,7 +39,7 @@
         <activity
             android:launchMode="singleTask"
             android:name=".mvvm.view.MainActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="landscape"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -47,7 +47,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".mvvm.view.BluetoothActivity"/>
+        <activity android:name=".mvvm.view.BluetoothActivity"
+            android:screenOrientation="landscape"
+            android:launchMode="singleTop"/>
     </application>
 
 </manifest>

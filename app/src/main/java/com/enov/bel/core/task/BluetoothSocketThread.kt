@@ -31,19 +31,19 @@ class BluetoothSocketThread(private val listener: (String) -> Unit) : Thread() {
             listener.invoke("蓝牙ServerSocket开始监听")
             bluetoothSocket = bluetoothServerSocket.accept()
             listener.invoke("蓝牙Socket已连接")
-            if (bluetoothSocket!= null) {
+            if (bluetoothSocket != null) {
                 inputStream = bluetoothSocket?.inputStream
                 val bytes = ByteArray(1024)
                 inputStream?.let {
                     while (!isInterrupted) {
-                        sleep(100)
-                        if (it.available() > 0) {
-                            val count = it.read(bytes)
-                            val results = ByteArray(count)
-                            System.arraycopy(bytes, 0, results, 0, count)
-                            println("接收到消息了 ${CodeUtil.bytes2HexString(results)}")
-                            listener.invoke("接收到消息了 ${CodeUtil.bytes2HexString(results)}")
+                        while (it.available() == 0) {
+                            sleep(100)
                         }
+                        val count = it.read(bytes)
+                        val results = ByteArray(count)
+                        System.arraycopy(bytes, 0, results, 0, count)
+                        println("接收到消息了 ${CodeUtil.bytes2HexString(results)}")
+                        listener.invoke("接收到消息了 ${CodeUtil.bytes2HexString(results)}")
                     }
                     it.close()
                 }
@@ -65,11 +65,19 @@ class BluetoothSocketThread(private val listener: (String) -> Unit) : Thread() {
      * 发送消息
      */
     fun sendMessage(byteArray: ByteArray) {
-        bluetoothSocket?.let{
-            val outputStream = it.outputStream
-            outputStream.write(byteArray)
-            listener.invoke("发送消息成功: ${CodeUtil.bytes2HexString(byteArray)}")
-            outputStream.flush()
+        bluetoothSocket?.let {
+            if (it.isConnected) {
+                val outputStream = it.outputStream
+                outputStream.write(byteArray)
+                listener.invoke("发送消息成功: ${CodeUtil.bytes2HexString(byteArray)}")
+                outputStream.flush()
+            } else {
+                listener.invoke("连接已断开")
+            }
         }
+    }
+
+    fun sendMessage(string: String) {
+        sendMessage(CodeUtil.toBytes(string))
     }
 }
