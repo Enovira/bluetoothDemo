@@ -16,6 +16,13 @@
             app:flexWrap="nowrap"
             app:justifyContent="flex_start">
 
+            <com.enov.bel.core.base.TitleBar
+                android:id="@+id/titleBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:leftVisible="visible"
+                app:title="title"/>
+
             <TextView
                 android:id="@+id/toBluetoothActivity"
                 android:layout_width="wrap_content"

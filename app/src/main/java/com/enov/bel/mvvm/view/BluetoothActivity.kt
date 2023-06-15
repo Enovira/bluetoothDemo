@@ -126,14 +126,18 @@ class BluetoothActivity : BaseActivity<BluetoothActivityVM, ActivityBluetoothBin
                 return@setOnClickListener
             }
             viewModel.viewModelScope.launch(Dispatchers.IO) {
-                val outputStream = bluetoothSocket?.outputStream
-                val bytes = CodeUtil.toBytes(content.replace(" ", ""))
-                outputStream?.write(bytes)
-                println("发送消息成功 ${CodeUtil.bytes2HexString(bytes)}")
-                withContext(Dispatchers.Main) {
-                    AppToast.show("发送消息成功 ${CodeUtil.bytes2HexString(bytes)}")
+                bluetoothSocket?.let {
+                    if (it.isConnected)  {
+                        val outputStream = bluetoothSocket?.outputStream
+                        val bytes = CodeUtil.toBytes(content.replace(" ", ""))
+                        outputStream?.write(bytes)
+                        println("发送消息成功 ${CodeUtil.bytes2HexString(bytes)}")
+                        withContext(Dispatchers.Main) {
+                            AppToast.show("发送消息成功 ${CodeUtil.bytes2HexString(bytes)}")
+                        }
+                        outputStream?.flush()
+                    }
                 }
-                outputStream?.flush()
             }
         }
         binding.sendMessageFromMain.setOnClickListener {
@@ -162,10 +166,10 @@ class BluetoothActivity : BaseActivity<BluetoothActivityVM, ActivityBluetoothBin
 
     private fun initObserver() {
         viewModel.bondedDevicesLiveData.observe(this) {
+            binding.drawerLayout.openDrawer(GravityCompat.END)
             bondedBluetoothDeviceList.clear()
             bondedBluetoothDeviceList.addAll(it)
             bondedDeviceAdapter.notifyDataSetChanged()
-            binding.drawerLayout.openDrawer(GravityCompat.END)
         }
         App.instance.eventViewModel.bluetoothStateLiveData.observe(this) {
             if (it) {

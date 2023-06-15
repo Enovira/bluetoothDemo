@@ -14,13 +14,14 @@ import com.enov.bel.core.utils.CodeUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.*
+import kotlin.collections.ArrayList
 
 @SuppressLint("MissingPermission")
 class BluetoothActivityVM(application: Application) : AndroidViewModel(application) {
 
     private var bluetoothSocketThread: BluetoothSocketThread? = null
 
-    val bondedDevicesLiveData: MutableLiveData<List<BluetoothDevice>> = MutableLiveData()
+    val bondedDevicesLiveData: MutableLiveData<MutableList<BluetoothDevice>> = MutableLiveData()
 
 
     fun switchBluetooth() {
